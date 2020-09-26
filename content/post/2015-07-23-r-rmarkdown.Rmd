@@ -9,13 +9,13 @@ tags: ["R Markdown", "plot", "regression"]
 bibliography: "references.bib"
 categories: ["R"]
 tags: ["R Markdown", "plot", "regression"]
----
+--- 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-By: Arjun Dhatt 
+By:Arjun Dhatt 
  
 # Abstract
  
