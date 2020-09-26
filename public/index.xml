@@ -32,8 +32,8 @@
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
       <guid>/2015/07/23/analysis-of-fatal-covid-19-cases-in-toronto/</guid>
-      <description>Abstract In this analysis, I will be looking at COVID-19 data in the city of Toronto to identify unique unique trends in the fatal cases of COVID-19. After conducting the analysis, I was able to conclude that COVID-19 is more fatal to the older population compared to the younger population. This information is crucial because it helps determine who is most at risk from the virus.
-What was done? - Analysis to find significant informatin in COVID-19 Data’ What was found?</description>
+      <description>Introduction We use @citetidyverse
+The purpose of this analysis is to identify trends in the fatal cases of COVID-19 in Toronto. Before beginning the analysis, I wanted to see whether the older population is more at risk from COVID-19 compared to the younger population. Using data from the city of Toronto, I wanted to observe the distribution of age groups among fatal COVID-19 cases. To begin the analysis, I looked at the age groups for all COVID-19 cases — including those that did not result in fatalities — to get an idea of the age groups that were most exposed to the virus.</description>
     </item>
     
     <item>

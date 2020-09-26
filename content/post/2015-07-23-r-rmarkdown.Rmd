@@ -2,7 +2,11 @@
 title: "Analysis of Fatal COVID-19 Cases in Toronto"
 author: "Arjun Dhatt"
 date: 2015-07-23T21:13:14-05:00
-bibliograph: "references.bib"
+bibliography: "references.bib"
+categories: ["R"]
+tags: ["R Markdown", "plot", "regression"]
+---
+bibliography: "references.bib"
 categories: ["R"]
 tags: ["R Markdown", "plot", "regression"]
 ---
@@ -11,34 +15,64 @@ tags: ["R Markdown", "plot", "regression"]
 knitr::opts_chunk$set(collapse = TRUE)
 ```
 
+By: Arjun Dhatt 
+ 
 # Abstract
+ 
+In this analysis, I will be looking at COVID-19 data in the city of Toronto to identify unique trends in the fatal cases of COVID-19. After conducting the analysis, I was able to conclude that COVID-19 is more fatal to the older population compared to the younger population. This information is crucial because it helps determine who is most at risk from the virus. 
 
-In this analysis, I will be looking at COVID-19 data in the city of Toronto to identify unique unique trends in the fatal cases of COVID-19. After conducting the analysis, I was able to conclude that COVID-19 is more fatal to the older population compared to the younger population. This information is crucial because it helps determine who is most at risk from the virus. 
+# Introduction
 
-What was done? 
-- Analysis to find significant informatin in COVID-19 Data'
-What was found? 
-- Found that although mostly 20-60 yaer olds make up most cases, most deaths are in older
-- Crucial becasue it shows who is most affected by the disease and most likely to die. 
+The COVID-19 pandemic has affected the entire world in many different ways. In particular, the COVID-19 virus has severely affected the older population causing many deaths around the world. I wanted to investigate this issue  by analyzing COVID-19 data in the city of Toronto. 
 
-# Intro
+The purpose of this analysis is to identify trends in the fatal cases of COVID-19 in Toronto. Before beginning the analysis, I wanted to see whether the older population is really more at risk from COVID-19 compared to the younger population. Using data from the city of Toronto, I wanted to observe the distribution of age groups among the fatal COVID-19 cases in Toronto. 
+To begin the analysis, I used the opendatatoronto (@citeopendatatoronto) package to download COVID-19 related data in the city of Toronto. After downloading the package, I looked at the age groups for all COVID-19 cases — including those that did not result in fatalities — to get an idea of the age groups that were most exposed to the virus. I visualized the data by creating histograms with the ggplot 2 package (@citeggplot2). I found that the population aged 20-60 was most exposed to the virus, while those younger than 20 or older than 60 had been less exposed. I then compared the results to the age groups for  fatal cases to identify any differences in the distribution of cases. I found that the distributions varied drastically because fatal cases were much more common in the older population compared to the younger population. 
 
-We use @citetidyverse. 
-
-The purpose of this analysis is to identify trends in the fatal cases of COVID-19 in Toronto. To begin the analysis, I looked at the age groups for all COVID-19 cases — including those that did not result in fatalities — to get an idea of which age groups were most exposed to the virus. I found that the population aged 20-60 was most exposed to the virus, while those younger than 20 or older than 60 had been less exposed. I then compared the results to the age groups for only fatal cases to identify any differences in the distribution of cases.  I found that fatal cases were much more common among older adults as compared to the younger population. This finding is important because it shows which age groups are most sensitive to the virus. 
+This finding is important because it shows that the virus is more fatal for the older population compared to the younger population. This information also helps determine the allocation of resources to ensure that the older population is well cared for.
 
 # Description of Dataset
 
-The dataset contains information related to the COVID-19 outbreak as reported by Toronto Public Health. For all confirmed and probable cases in Toronto, the dataset contains useful information about each case such as the age group, source of infection, gender, etc. The dataset uses all categorical variables to explain each case and contains  information on a total of 16 942 cases. The data is extracted from the provincial communicable disease reporting system  along with Toronto's custom COVID-19 case management system. 
+The dataset contains information related to the COVID-19 outbreak as reported by Toronto Public Health. For all confirmed and probable cases in Toronto, the dataset contains useful information about each case such as the age group, outcome, gender, etc. The dataset uses  categorical variables to explain each case and contains information on a total of 16,942 cases. The data is extracted from the provincial communicable disease reporting system  along with Toronto's custom COVID-19 case management system. In this analysis, we are primarily going to be looking at two variables — 'Age Group' and 'Outcome'. Below, in Figure 0, you will see what the analyzed dataset looks like for 4 randomly selected cases: 
 
-[SHOWCASE DATA SOMEHOW]
+Figure 0
+```{r, tidy =FALSE, echo =FALSE, warning= FALSE}
+library(opendatatoronto)
+covid_packages <- search_packages("COVID")
 
+covid_resources <- covid_packages %>%
+  list_package_resources()
 
-# Important Findings
+covid_statistics <- covid_resources %>%
+  get_resource()
 
+covid_statistics_sample <- head(covid_statistics,4)
+covid_statistics_sample <- subset(covid_statistics_sample, select =c(1,2,4,12))
 
-In the dataset, we are given the 'age at time of illness' for each individual that contracted COVID-19. Below is a histogram to show the age groups that are most affected: 
+covid_statistics_sample
+```
 
+The dataset in Figure 0 defines the variables as follows: 
+
+* _id — Unique row identifier for Open Data database
+
+* Assigned_ID — A unique ID assigned to cases by Toronto Public Health for the purposes of posting to Open Data, to allow for tracking of specific cases
+
+* Age Group — Age at time of illness
+
+* Outcome — 
+
+  -Fatal: Cases with a fatal outcome reported.
+
+  -Resolved: Cases not reported as deceased, and who are either: reported as 'recovered' OR where the report date is more      than 14 days from symptom onset AND the case is not currently hospitalized.
+  
+  -Active: All other cases
+
+        
+# Important Findings/ Analysis 
+
+To beging the analysis, I started by looking at the distribution of age groups in all COVID-19 cases in Toronto. 
+ 
+In the dataset, we are given the 'age at time of illness' for each individual that contracted COVID-19. Below is a histogram to show the age groups that are most affected:
 
 Figure 1
 ```{r, tidy =FALSE, echo =FALSE, warning= FALSE}
@@ -52,70 +86,56 @@ covid_statistics <- covid_resources %>%
   get_resource()
 
 library(ggplot2)
-#age of people who have covid 
+#distribution of age  group 
 agegroup<-covid_statistics$`Age Group`  
 ggplot(data=covid_statistics, aes(agegroup)) + 
-  geom_histogram(stat="count") +scale_x_discrete(labels = c('<20','20 to 30','30 to 40','40 to 50', '50 to 60', '60 to 70', '70 to 80','80 to 90','>90', 'NA')) + ggtitle("Age Group of COVID-19 Cases") + xlab("Age Group") + ylab("Cases")
-
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<=19','20 to 29','30 to 39','40 to 49', '50 to 59', '60 to 69', '70 to 79','80 to 89','90+', 'Unknown')) + ggtitle("Age Group of COVID-19 Cases") + xlab("Age Group") + ylab("Cases")
 ```
 
-In Figure 1.1, looking at the histogram, we can see that most cases are in people aged 20-60. For those younger than 20, or older than 60, the bar is much shorter indicating that less people are exposed to the virus. An explanation for this can be the fact that most of the working population is aged 20-60 and they are more likely to get exposed to the virus in their workplace. (Weakness/drawback-- this can look a lot different if we got information after September when kids are gone back to school) 
 
-
-To investigate this further, we can also look at the outcome of each case to identify whether it resulted in a fatality:
+In Figure 1, we can see that most cases are in people aged 20-60. For those younger than 20, or older than 60, the bar is much shorter indicating that there are less people exposed to the virus. An explanation for this can be the fact that most of the working population is aged 20-60 and they are more likely to be exposed to the virus in their workplace. 
+ 
+Despite the fact that most cases are in the population aged 20-60, does that mean that most fatalities are in the population aged 20-60? To investigate this further, we can look at the outcome of all case to identify whether they are still active, resolved, or fatal. Below is a histogram to show the outcome of all COVID-19 cases in Toronto: 
 
 Figure 2
 ```{r, tidy =FALSE, echo =FALSE, warning= FALSE}
+#distribution of outcome
 outcome <- covid_statistics$Outcome
 ggplot(data=covid_statistics, aes(outcome)) + 
   geom_histogram(stat="count") + ggtitle("Outcome of COVID-19 Cases") + xlab("Outcome") + ylab("Count")
 ```
 
-In figure 2, looking at the histogram, we can see that most of the cases are resolved, and in comparison to the cases that are resolved, very few are fatal. This poses the interesting question— among which age group are fatalities most common?  
+In Figure 2, we can see that most of the cases are resolved, and in comparison to the cases that are resolved, very few are fatal. This poses the interesting question— among which age group are fatalities most common? We recently observed that the population aged 20-60 account for a large number of COVID-19 cases, but do any of them result in fatalities? 
 
-In order to see which age group has the most fatalities from the virus, I will start by filtering the dataset so that it only contains cases that are classified as 'fatal'. After filtering the dataset, I will create a histogram to see the distribution of age groups to see which is most affected by the virus. 
+In order to see which age groups have the most fatalities from the virus, I will start by filtering the dataset so that it only contains cases that resulted in a fatal outcome. With the fatal-filtered dataset, I want to observe the distribution of the age groups. Because COVID-19 is more common in the population aged 20-60 and less common in the population older than 60 , I expect a similar distribution in the fatal cases. 
+
+Below is a histogram created from the filtered dataset  to see the distribution of age groups in the fatal cases of COVID-19: 
 
 Figure 3
 ```{r, tidy =FALSE, echo =FALSE, warning= FALSE}
 #filtering fatal outcomes
 fataldata <- subset(covid_statistics, outcome == 'FATAL')
 
+#distribution of age groups in fatal outcomes only 
 ageoffatal <- fataldata$`Age Group`
 ggplot(data=fataldata, aes(ageoffatal)) + 
-  geom_histogram(stat="count") +scale_x_discrete(labels = c('<20','20 to 30','30 to 40','40 to 50', '50 to 60', '60 to 70', '70 to 80','80 to 90','>90', 'NA'))+ ggtitle("Age Group of Fatal COVID-19 Cases") + xlab("Age Group") + ylab("Fatalities")
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<=19','20 to 29','30 to 39','40 to 49', '50 to 59', '60 to 69', '70 to 79','80 to 89','90+', 'Unknown')) + ggtitle("Age Group of COVID-19 Cases") + xlab("Age Group") + ylab("Cases")
 ```
 
-In Figure 3, looking at the histogram , it is very clear that most fatal cases are in the older population. Because the height of the bar increases as the age group increases, we can see that the virus is more severe as you grow older. Surprisingly, there are no fatal cases in individuals less than 39 years old.    
+In Figure 3, suprisingly, most of the fatal cases are in the older population. Because the height of the bar increases as the age group increases, we can see that the virus is much more severe as you grow older. After expecting to see a distribution similiar to Figure 1, I was surprised to see there are no cases in the population younger than 40. I was also shocked to see how much the distributions differ between all cases and only fatal cases. 
 
-# Weaknesses
-- Dataset only includes Toronto. Maybe if we had a different city we can generalize the results. 
-- May look a lot different with September results. 
+# Weaknesses and Next Steps
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+One potential weakness of the analysis is the generalizability of the results. Despite the fact that the dataset  contains multitudes of  information, it may be hard to generalize the results because the data is exclusive to the city of Toronto. There is always the chance that the outcome of our results may not be generalizable to a different city in a different country. A solution to this may be to analyze a larger dataset that isn't exclusive to the city of Toronto so that our results can be more generalizable. Combining the Toronto dataset with other cities that aren't urban may change our distribution and therefore change the results.  
 
-You can embed an R code chunk like this:
+Another potential weakness of the analysis comes from the fact that we are analyzing the results primarily from Stage 1 of the virus. During Stage 1, schools were closed in the city of Toronto which may be the reason why we see fewer cases in the population aged younger than 20. The results from our analysis may change with the spike in COVID-19 cases in September — partly due to the opening of schools. A solution to this may be to also include the results from the spike in cases during September to see how the distribution of COVID-19 changes among various age groups. The spike in cases in September may also have a different distribution than what was previously seen in Stage 1 because of the differences in safety precautions —  common use of masks, regulated social distancing, etc. This may change the results of our analysis.  
 
-```{r cars}
-summary(cars)
-fit <- lm(dist ~ speed, data = cars)
-fit
-```
+# Appendix 
+ 
+Below, I will show the code used to produce the graphs and tables used in my analysis: 
 
-# Including Plots
-
-You can also embed plots. See Figure \@ref(fig:pie) for example:
-
-```{r pie, fig.cap='A fancy pie chart.', tidy=FALSE}
-par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c('Sky', 'Sunny side of pyramid', 'Shady side of pyramid'),
-  col = c('#0292D8', '#F7EA39', '#C4B632'),
-  init.angle = -50, border = NA
-)
-```
-
-```{r}
+Figure 0
+```{r, fig.show='hide'}
 library(opendatatoronto)
 covid_packages <- search_packages("COVID")
 
@@ -125,18 +145,87 @@ covid_resources <- covid_packages %>%
 covid_statistics <- covid_resources %>%
   get_resource()
 
-covid_statistics
+covid_statistics_sample <- head(covid_statistics,4)
+covid_statistics_sample <- subset(covid_statistics_sample, select =c(1,2,4,12))
+
+covid_statistics_sample
+```
+ 
+Figure 1
+```{r, fig.show='hide'}
+library(opendatatoronto)
+covid_packages <- search_packages("COVID")
+
+covid_resources <- covid_packages %>%
+  list_package_resources()
+
+covid_statistics <- covid_resources %>%
+  get_resource()
+
+library(ggplot2)
+#distribution of age  group 
+agegroup<-covid_statistics$`Age Group`  
+ggplot(data=covid_statistics, aes(agegroup)) + 
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<=19','20 to 29','30 to 39','40 to 49', '50 to 59', '60 to 69', '70 to 79','80 to 89','90+', 'Unknown')) + ggtitle("Age Group of COVID-19 Cases") + xlab("Age Group") + ylab("Cases")
 ```
 
-To investigate this further, we can also look at a histogram to see where the source of most infections are. Because the dataset contains a column detailing the 'source of infection', I will create a histogram to see which source is most popular: 
-```{r}
-soi <- covid_statistics$`Source of Infection`
-ggplot(data=covid_statistics, aes(soi)) + 
-  geom_histogram(stat="count")
+Figure 2
+```{r, fig.show='hide'}
+#distribution of outcome
+outcome <- covid_statistics$Outcome
+ggplot(data=covid_statistics, aes(outcome)) + 
+  geom_histogram(stat="count") + ggtitle("Outcome of COVID-19 Cases") + xlab("Outcome") + ylab("Count")
 ```
 
-As shown in the histogram above, we can see that most cases are due to 'Close contact' or 'N/A- Outbreak associated'. As defined in the dataset, 'Close contact' is someone who was 'in close contact with a confirmed or probable COVID-19 case', while 'N/A- Outbreak associated' is unsurprisable defined as an 'outbreak-associated case'. 
+Figure 3
+```{r, fig.show='hide'}
+#filtering fatal outcomes
+fataldata <- subset(covid_statistics, outcome == 'FATAL') 
 
+#distribution of age groups in fatal outcomes only 
+ageoffatal <- fataldata$`Age Group`
+ggplot(data=fataldata, aes(ageoffatal)) + 
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<=19','20 to 29','30 to 39','40 to 49', '50 to 59', '60 to 69', '70 to 79','80 to 89','90+', 'Unknown')) + ggtitle("Age Group of COVID-19 Cases") + xlab("Age Group") + ylab("Cases")
+```
+
+# References 
+
+In Figure 1, we can see that most cases are in people aged 20-60. For those younger than 20, or older than 60, the bar is much shorter indicating that there are less people exposed to the virus. An explanation for this can be the fact that most of the working population is aged 20-60 and they are more likely to be exposed to the virus in their workplace. 
+
+Despite the fact that most cases are in the population aged 20-60, does that mean that most fatalities are in the population aged 20-60? To investigate this further, we can look at the outcome of all case to identify whether they are still active, resolved, or fatal. Below is a histogram to show the outcome of all COVID-19 cases in Toronto: 
+
+Figure 2
+```{r, tidy =FALSE, echo =FALSE, warning= FALSE}
+#distribution of outcome
+outcome <- covid_statistics$Outcome
+ggplot(data=covid_statistics, aes(outcome)) + 
+  geom_histogram(stat="count") + ggtitle("Outcome of COVID-19 Cases") + xlab("Outcome") + ylab("Count")
+```
+
+In Figure 2, we can see that most of the cases are resolved, and in comparison to the cases that are resolved, very few are fatal. This poses the interesting question— among which age group are fatalities most common? We recently observed that the population aged 20-60 account for a large number of COVID-19 cases, but do any of them result in fatalities? 
+
+In order to see which age groups have the most fatalities from the virus, I will start by filtering the dataset so that it only contains cases that resulted in a fatal outcome. With the fatal-filtered dataset, I want to observe the distribution of the age groups. Because COVID-19 is more common in the population aged 20-60 and less common in the population older than 60 , I expect a similar distribution in the fatal cases. 
+
+Below is a histogram created from the filtered dataset  to see the distribution of age groups in the fatal cases of COVID-19: 
+
+Figure 3
+```{r, tidy =FALSE, echo =FALSE, warning= FALSE}
+#filtering fatal outcomes
+fataldata <- subset(covid_statistics, outcome == 'FATAL')
+
+#distribution of age groups in fatal outcomes only 
+ageoffatal <- fataldata$`Age Group`
+ggplot(data=fataldata, aes(ageoffatal)) + 
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<20','20 to 30','30 to 40','40 to 50', '50 to 60', '60 to 70', '70 to 80','80 to 90','>90', 'NA'))+ ggtitle("Age Group of Fatal COVID-19 Cases") + xlab("Age Group") + ylab("Fatalities")
+```
+
+In Figure 3, suprisingly, most of the fatal cases are in the older population. Because the height of the bar increases as the age group increases, we can see that the virus is more severe as you grow older. After expecting to see a distribution similiar to Figure 1, I was surprised to see there are no cases in the population younger than 40. I was also shocked to see how much the distributions differ between all cases and only fatal cases. 
+
+# Weaknesses
+
+One potential weakness of the analysis is the generalizability of the results. Despite the fact that the dataset used contains multitudes of  information, it may be hard to generalize the results because the data is exclusive to the city of Toronto. There is always the chance that the outcome of our results may not be generalizable to a different city in a different country. 
+
+Another potential weakness of the analysis comes from the fact that we are analyzing the results primarily from Stage 1 of the virus. During Stage 1, schools were closed in the city of Toronto which may be the reason why we see fewer cases in the population aged younger than 20. The results from our analysis may change with the spike in COVID-19 cases in September — partly due to the opening of schools.  
 
 # Appendix 
 
@@ -154,17 +243,18 @@ covid_statistics <- covid_resources %>%
   get_resource()
 
 library(ggplot2)
-#age of people who have covid 
+#distribution of age  group 
 agegroup<-covid_statistics$`Age Group`  
 ggplot(data=covid_statistics, aes(agegroup)) + 
-  geom_histogram(stat="count")
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<20','20 to 30','30 to 40','40 to 50', '50 to 60', '60 to 70', '70 to 80','80 to 90','>90', 'NA')) + ggtitle("Age Group of COVID-19 Cases") + xlab("Age Group") + ylab("Cases")
 ```
 
 Figure 2
 ```{r, fig.show='hide'}
+#distribution of outcome
 outcome <- covid_statistics$Outcome
 ggplot(data=covid_statistics, aes(outcome)) + 
-  geom_histogram(stat="count")
+  geom_histogram(stat="count") + ggtitle("Outcome of COVID-19 Cases") + xlab("Outcome") + ylab("Count")
 ```
 
 Figure 3
@@ -172,7 +262,8 @@ Figure 3
 #filtering fatal outcomes
 fataldata <- subset(covid_statistics, outcome == 'FATAL')
 
+#distribution of age groups in fatal outcomes only 
 ageoffatal <- fataldata$`Age Group`
 ggplot(data=fataldata, aes(ageoffatal)) + 
-  geom_histogram(stat="count")
+  geom_histogram(stat="count") +scale_x_discrete(labels = c('<20','20 to 30','30 to 40','40 to 50', '50 to 60', '60 to 70', '70 to 80','80 to 90','>90', 'NA'))+ ggtitle("Age Group of Fatal COVID-19 Cases") + xlab("Age Group") + ylab("Fatalities")
 ```
